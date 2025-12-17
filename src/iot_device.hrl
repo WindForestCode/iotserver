@@ -9,5 +9,3 @@
     temperature     :: float(),
     metrics = []    :: [metrics()]
 }).
-
-
