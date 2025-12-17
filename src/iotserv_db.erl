@@ -23,7 +23,7 @@ add_device(Device) ->
     ok.
 
 delete_device_by_id(Id) ->
-    case det:member(iotDevicesDisk, Id) of
+    case dets:member(iotDevicesDisk, Id) of
         true ->
             dets:delete(iotDevicesRam, Id),
             ets:delete(iotDevicesDisk, Id),
@@ -43,7 +43,7 @@ update_device_by_id(Id, Field, NewValue) ->
         [Device] ->
             UpdatedDevice = update_field(Device, Field, NewValue),
             ets:insert(iotDevicesRam, UpdatedDevice),
-            dets:insert(iotDevicesDisk),
+            dets:insert(iotDevicesDisk, UpdatedDevice),
             {ok, UpdatedDevice};
         [] ->
             {error, not_found}
@@ -64,3 +64,11 @@ update_field(Device, metrics, NewValue) when is_list(NewValue) ->
 
 update_field(_, Field, _) ->
     {invalid_field, Field}.
+
+restore_database() ->
+    Insert = fun(#iot_device{id = Id, name = Name, address = Address,
+        temperature = Temperature, metrics = Metrics } = Device) ->
+        ets:insert(iotDevicesRam, Device),
+        continue
+             end,
+    dets:traverse(iotDevicesDisk, Insert).
