@@ -1,17 +1,17 @@
-
 -module(iotserv_db).
 -include("iot_device.hrl").
 
--export([create_tables/1, close_tables/0, add_device/1, delete_device_by_id/1, update_device_by_id/3, find_device_by_id/1]).
+-export([create_tables/1, close_tables/0, add_device/1, delete_device_by_id/1,
+    update_device_by_id/3, find_device_by_id/1, restore_database/0]).
 
 create_tables(DataBaseName) ->
     ets:new(iotDevicesRam, [named_table,
-                            set,
-                            {keypos, #iot_device.id}]),
+        set,
+        {keypos, #iot_device.id}]),
 
     dets:open_file(iotDevicesDisk, [{file, DataBaseName},
-                                    {type, set},
-                                    {keypos, #iot_device.id}]).
+        {type, set},
+        {keypos, #iot_device.id}]).
 
 close_tables() ->
     ets:delete(iotDevicesRam),
@@ -66,9 +66,4 @@ update_field(_, Field, _) ->
     {invalid_field, Field}.
 
 restore_database() ->
-    Insert = fun(#iot_device{id = Id, name = Name, address = Address,
-        temperature = Temperature, metrics = Metrics } = Device) ->
-        ets:insert(iotDevicesRam, Device),
-        continue
-             end,
-    dets:traverse(iotDevicesDisk, Insert).
+    ets:from_dets(iotDevicesRam, iotDevicesDisk).
