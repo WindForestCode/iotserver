@@ -11,10 +11,12 @@
 -include("iot_device.hrl").
 
 %% Exported client functions
+-spec start_link() -> {ok, pid()}.
 start_link() ->
     {ok, FileName} = application:get_env(dets_name),
     start_link(FileName).
 
+-spec start_link(string()) -> {ok, pid()}.
 start_link(FileName) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, FileName, []).
 
@@ -22,19 +24,24 @@ stop() ->
     gen_server:cast(?MODULE, stop).
 
 %% Customer Services API
+-spec add_device(id(), string(), string(), float(), metrics()) -> term().
 add_device(Id, Name, Address, Temperature, Metrics) ->
     gen_server:call(?MODULE, {add_device, Id, Name, Address, Temperature, Metrics}).
 
+-spec delete_device_by_id(id()) -> term().
 delete_device_by_id(Id) ->
     gen_server:call(?MODULE, {delete_device, Id}).
 
+-spec find_device_by_id(id()) -> term().
 find_device_by_id(Id) ->
     gen_server:call(?MODULE, {find_device_by_id, Id}).
 
+-spec change_device_by_id(id(), atom(), term()) -> term().
 change_device_by_id(Id, FieldToUpdate, NewValue) ->
     gen_server:call(?MODULE, {change_device, Id, FieldToUpdate, NewValue}).
 
 %% Callback functions
+-spec init(string()) -> {ok, _LoopData} | {ok, null}.
 init(FileName) ->
     iotserver_db:create_tables(FileName),
     iotserver_db:restore_database(),
