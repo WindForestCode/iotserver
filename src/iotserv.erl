@@ -3,7 +3,7 @@
 -author("MoonNew").
 
 -export([]).
--export([init/1, handle_call/3, handle_cast/2]).
+-export([init/1, terminate/2, handle_call/3, handle_cast/2]).
 
 -behavior(gen_server).
 
@@ -14,6 +14,9 @@ init(FileName) ->
     iotserv_db:create_tables(FileName),
     iotserv_db:restore_database(),
     {ok, null}.
+
+terminate(_Reason, _LoopData) ->
+    iotserv_db:close_tables().
 
 handle_call({add_device, Id, Name, Address, Temperature, Metrics}, _From, LoopData) ->
     Reply = iotserv_db:add_device(#iot_device{
