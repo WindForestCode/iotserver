@@ -29,7 +29,7 @@ delete_device_by_id(Id) ->
     gen_server:call(?MODULE, {delete_device, Id}).
 
 find_device_by_id(Id) ->
-    gen_server:call(?MODULE, {find_device_by_id(Id)}).
+    gen_server:call(?MODULE, {find_device_by_id, Id}).
 
 change_device_by_id(Id, FieldToUpdate, NewValue) ->
     gen_server:call(?MODULE, {change_device, Id, FieldToUpdate, NewValue}).
@@ -44,7 +44,7 @@ terminate(_Reason, _LoopData) ->
     iotserver_db:close_tables().
 
 handle_call({add_device, Id, Name, Address, Temperature, Metrics}, _From, LoopData) ->
-    Reply = iotserv_db:add_device(#iot_device{
+    Reply = iotserver_db:add_device(#iot_device{
         id = Id,
         name = Name,
         address = Address,
