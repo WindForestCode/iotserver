@@ -33,7 +33,7 @@ find_device_by_id(Id) ->
     gen_server:call(?MODULE, {find_device_by_id(Id)}).
 
 change_device_by_id(Id, FieldToUpdate, NewValue) ->
-    gen_server:call(?MODULE, {change_device, FieldToUpdate, NewValue}).
+    gen_server:call(?MODULE, {change_device, Id, FieldToUpdate, NewValue}).
 
 %% Callback functions
 init(FileName) ->
