@@ -1,4 +1,4 @@
--module(iotserv_db).
+-module(iotserver_db).
 -include("iot_device.hrl").
 
 -export([create_tables/1, close_tables/0, add_device/1, delete_device_by_id/1,
@@ -38,6 +38,7 @@ find_device_by_id(Id) ->
         [] -> {error, instance}
     end.
 
+% Здесь можно улучшить обработку неверного запроса
 update_device_by_id(Id, Field, NewValue) ->
     case ets:lookup(iotDevicesRam, Id) of
         [Device] ->
@@ -49,7 +50,7 @@ update_device_by_id(Id, Field, NewValue) ->
             {error, not_found}
     end.
 
-
+%% Обновление поля по атому
 update_field(Device, name, NewValue) when is_list(NewValue) ->
     Device#iot_device{name = NewValue};
 

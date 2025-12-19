@@ -1,5 +1,5 @@
 
--module(iotserv).
+-module(iotserver).
 -author("MoonNew").
 
 -export([start_link/0, start_link/1, stop/0]).
@@ -11,7 +11,6 @@
 -include("iot_device.hrl").
 
 %% Exported client functions
-
 start_link() ->
     {ok, FileName} = application:get_env(dets_name),
     start_link(FileName).
@@ -37,12 +36,12 @@ change_device_by_id(Id, FieldToUpdate, NewValue) ->
 
 %% Callback functions
 init(FileName) ->
-    iotserv_db:create_tables(FileName),
-    iotserv_db:restore_database(),
+    iotserver_db:create_tables(FileName),
+    iotserver_db:restore_database(),
     {ok, null}.
 
 terminate(_Reason, _LoopData) ->
-    iotserv_db:close_tables().
+    iotserver_db:close_tables().
 
 handle_call({add_device, Id, Name, Address, Temperature, Metrics}, _From, LoopData) ->
     Reply = iotserv_db:add_device(#iot_device{
@@ -54,16 +53,16 @@ handle_call({add_device, Id, Name, Address, Temperature, Metrics}, _From, LoopDa
     {reply, Reply, LoopData};
 
 handle_call({delete_device, Id}, _From, LoopData) ->
-    Reply = iotserv_db:delete_device_by_id(Id),
+    Reply = iotserver_db:delete_device_by_id(Id),
     {reply, Reply, LoopData};
 
 handle_call({find_device, Id}, _From, LoopData) ->
-    Reply = iotserv_db:find_device_by_id(Id),
+    Reply = iotserver_db:find_device_by_id(Id),
     {reply, Reply, LoopData};
 
 %% Изменение только одного параметра.
 handle_call({change_device, Id, FieldToUpdate, NewValue}, _From, LoopData) ->
-    Reply = iotserv_db:update_device_by_id(Id, FieldToUpdate, NewValue),
+    Reply = iotserver_db:update_device_by_id(Id, FieldToUpdate, NewValue),
     {reply, Reply, LoopData}.
 
 handle_cast(stop, LoopData) ->
