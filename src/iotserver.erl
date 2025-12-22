@@ -13,8 +13,8 @@
 %% Exported client functions
 -spec start_link() -> {ok, pid()}.
 start_link() ->
-   % {ok, FileName} = application:get_env(dets_name),
-    start_link("IotServer.db").
+    FileName = conf_reader:read_config(),
+    start_link(FileName).
 
 -spec start_link(string()) -> {ok, pid()}.
 start_link(FileName) ->
