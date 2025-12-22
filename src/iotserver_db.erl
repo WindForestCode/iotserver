@@ -25,8 +25,8 @@ add_device(Device) ->
 delete_device_by_id(Id) ->
     case dets:member(iotDevicesDisk, Id) of
         true ->
-            dets:delete(iotDevicesRam, Id),
-            ets:delete(iotDevicesDisk, Id),
+            dets:delete(iotDevicesDisk, Id),
+            ets:delete(iotDevicesRam, Id),
             ok;
         false ->
             {error, not_found}

@@ -13,8 +13,8 @@
 %% Exported client functions
 -spec start_link() -> {ok, pid()}.
 start_link() ->
-    {ok, FileName} = application:get_env(dets_name),
-    start_link(FileName).
+   % {ok, FileName} = application:get_env(dets_name),
+    start_link("IotServer.db").
 
 -spec start_link(string()) -> {ok, pid()}.
 start_link(FileName) ->
@@ -63,7 +63,7 @@ handle_call({delete_device, Id}, _From, LoopData) ->
     Reply = iotserver_db:delete_device_by_id(Id),
     {reply, Reply, LoopData};
 
-handle_call({find_device, Id}, _From, LoopData) ->
+handle_call({find_device_by_id, Id}, _From, LoopData) ->
     Reply = iotserver_db:find_device_by_id(Id),
     {reply, Reply, LoopData};
 
