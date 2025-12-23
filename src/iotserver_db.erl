@@ -1,5 +1,7 @@
 -module(iotserver_db).
+
 -include("iot_device.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 -export([create_tables/1, close_tables/0, add_device/1, delete_device_by_id/1,
     update_device_by_id/3, find_device_by_id/1, restore_database/0]).
@@ -68,3 +70,32 @@ update_field(_, Field, _) ->
 
 restore_database() ->
     ets:from_dets(iotDevicesRam, iotDevicesDisk).
+
+%% Tests
+%% {setup, Setup, Tests},
+%% {setup, Setup, Cleanup, Tests}
+
+empty_database_test_() ->
+    {spawn, {setup, fun() -> create_tables("TestDb") end,
+                    fun(_) ->   ?cmd("rm TestDb"),
+                                ets:delete(iotDevicesRam)
+                    end,
+                    ?_assertMatch({error, instance}, find_device_by_id(1))
+            }
+    }.
+
+add_device_test_() ->
+    {spawn, {setup, fun() -> create_tables("TestDb"),
+                             add_device(#iot_device{id = 1,
+                                 name = "Vacuum", address = "Home",
+                                 temperature = 14.0, metrics = []})
+                    end,
+                    fun(_) ->   ?cmd("rm TestDb"),
+                                ets:delete(iotDevicesRam)
+                    end,
+                    ?_assertMatch({ok, #iot_device{
+                                    id = 1, name = "Vacuum", address = "Home",
+                                    temperature = 14.0, metrics = []}},
+                        find_device_by_id(1))
+            }
+    }.
