@@ -1,0 +1,64 @@
+%% Компиляция
+moon@linux:~/Desktop/erlang/9/iotserver$ rebar3 compile
+===> Verifying dependencies...
+===> Analyzing applications...
+===> Compiling iotserver
+
+%% Запуск
+moon@linux:~/Desktop/erlang/9/iotserver$ rebar3 shell
+===> Verifying dependencies...
+===> Analyzing applications...
+===> Compiling iotserver
+Eshell V13.2.2.5  (abort with ^G)
+1> ===> Booted iotserver
+
+%% Функция добавления
+1> iotserver:add_device(1, "name", "place", 14.3, []).
+ok
+2> iotserver:add_device(2, "kate", "ny", 15.0, [atom, 57]).
+
+ok
+%% Функция поиска
+3> iotserver:find_device_by_id(1).
+{ok,{iot_device,1,"name","place",14.3,[]}}
+
+%% Функция удаления
+4> iotserver:delete_device_by_id(1).
+ok
+
+%% Функция изменения параметра сущности по ключу
+5> iotserver:change_device_by_id(2, address, "la").
+{ok,{iot_device,2,"kate","la",15.0,[atom,57]}}
+6> iotserver:find_device_by_id(2).
+{ok,{iot_device,2,"kate","la",15.0,[atom,57]}}
+
+%% Проверка поиска несуществующего id
+7> iotserver:find_device_by_id(1).
+{error,instance}
+8> iotserver:change_device_by_id(2, name, "alice").
+{ok,{iot_device,2,"alice","la",15.0,[atom,57]}}
+9> whereis(iotserver).
+<0.155.0>
+%% Проверка перезапуска серверного процесса
+10> iotserver:stop().
+ok
+11> =SUPERVISOR REPORT==== 23-Dec-2025::08:27:26.871323 ===
+    supervisor: {local,iotserver_sup}
+    errorContext: child_terminated
+    reason: normal
+    offender: [{pid,<0.155.0>},
+               {id,iotserver},
+               {mfargs,{iotserver,start_link,[]}},
+               {restart_type,permanent},
+               {significant,false},
+               {shutdown,5000},
+               {child_type,worker}]
+
+%% Процесс перезапущен супервайзером
+11> whereis(iotserver).
+<0.164.0>
+
+
+
+
+
